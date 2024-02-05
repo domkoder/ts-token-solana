@@ -1,5 +1,6 @@
 import {
 	TokenStandard,
+	createFungible,
 	createV1,
 	mintV1,
 	mplTokenMetadata,
@@ -25,25 +26,54 @@ const metadata = {
 
 const mint = generateSigner(umi)
 
-async function createMetadataDetails() {
-	await createV1(umi, {
-		mint,
-		authority: umi.identity,
-		name: metadata.name,
-		symbol: metadata.symbol,
-		uri: metadata.uri,
-		sellerFeeBasisPoints: percentAmount(0),
-		decimals: 9,
-		tokenStandard: TokenStandard.Fungible,
-	}).sendAndConfirm(umi)
-}
+console.log(mint)
+
+// async function createMetadataDetails() {
+// 	await createV1(umi, {
+// 		mint,
+// 		authority: umi.identity,
+// 		name: metadata.name,
+// 		symbol: metadata.symbol,
+// 		uri: metadata.uri,
+// 		sellerFeeBasisPoints: percentAmount(0),
+// 		decimals: 9,
+// 		tokenStandard: TokenStandard.Fungible,
+// 	}).sendAndConfirm(umi)
+// }
 
 async function mintToken() {
-	await mintV1(umi, {
-		mint: mint.publicKey,
-		authority: umi.identity,
-		amount: 10_000000,
-		tokenOwner: umi.identity.publicKey,
-		tokenStandard: TokenStandard.Fungible,
-	}).sendAndConfirm(umi)
+	try {
+		let result = await mintV1(umi, {
+			mint: mint.publicKey,
+			authority: umi.identity,
+			amount: 10_000000,
+			tokenOwner: umi.identity.publicKey,
+			tokenStandard: TokenStandard.Fungible,
+		}).sendAndConfirm(umi)
+		console.log('result', result)
+	} catch (error) {
+		console.error('error minting the tokens', error)
+	}
 }
+
+async function createToken() {
+	try {
+		await createFungible(umi, {
+			mint,
+			authority: umi.identity,
+			name: metadata.name,
+			symbol: metadata.symbol,
+			uri: metadata.uri,
+			sellerFeeBasisPoints: percentAmount(0),
+			decimals: 9,
+		}).sendAndConfirm(umi)
+		console.log(
+			`success \ntx: https://explorer.solana.com/address/${mint.publicKey}?cluster=devnet`
+		)
+	} catch (error) {
+		console.error('error creating the tokens', error)
+	}
+}
+
+mintToken()
+createToken()
