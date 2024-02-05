@@ -37,3 +37,13 @@ async function createMetadataDetails() {
 		tokenStandard: TokenStandard.Fungible,
 	}).sendAndConfirm(umi)
 }
+
+async function mintToken() {
+	await mintV1(umi, {
+		mint: mint.publicKey,
+		authority: umi.identity,
+		amount: 10_000000,
+		tokenOwner: umi.identity.publicKey,
+		tokenStandard: TokenStandard.Fungible,
+	}).sendAndConfirm(umi)
+}
